@@ -13,7 +13,7 @@ from langchain_core.documents import Document
 # Step 1: Data Collection
 file_path = 'C:/Users/yks/Downloads/基于RFID的人体无器械活动识别研究.docx'  # Replace with your local file path
 
-def load_docx_file(file_path):
+def load_docx_file(file_path):# 读取.docx文件
     doc = docx.Document(file_path)
     full_text = []
     for para in doc.paragraphs:
@@ -21,27 +21,28 @@ def load_docx_file(file_path):
     return '\n'.join(full_text)
 
 docs=load_docx_file(file_path)
-print(len(docs))
+#形成为文档格式
 documents = [
 Document(
     page_content=docs,
     metadata={"source": 'text'}
 )
 ]
-# Step 2: Data Processing
+
+# Step 2: Data Processing 切割文档内容
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 res = splitter.split_documents(documents)
 
-# Step 3: Vectorization
+# Step 3: Vectorization 向量化
 qianfan_ak = os.getenv("QIANFAN_AK")
 qianfan_sk = os.getenv("QIANFAN_SK")
 embedding_model = QianfanEmbeddingsEndpoint(api_key=qianfan_ak, secret_key=qianfan_sk)
 vectorstore = Chroma.from_documents(documents=res, embedding=embedding_model)
 
-# Step 4: Storage
+# Step 4: Storage 创建搜索器
 retriever = vectorstore.as_retriever()
 
-# Step 5: Retrieval
+# Step 5: Retrieval 
 model = QianfanChatEndpoint(
     model="ERNIE-4.0-8K",
     temperature=0.2,
@@ -54,23 +55,25 @@ message = '''
 你是一个助手，可以来回答关于文章内的问题,\n
 {context}
 '''
+# 创建提示
 prompt_template = ChatPromptTemplate.from_messages([
     ('human', message),
     MessagesPlaceholder('chat_history'),
     ('human', "{input}")
 ])
-
+#回答解析器
 param = StrOutputParser()
+# 创建检索链
 model = prompt_template|model | param
 chain = create_retrieval_chain(retriever, model)
-
+# Step 6: Chat 保存历史数据
 store = {}
-
+# 获取历史记录
 def get_session_history(session_id: str):
     if session_id not in store:
         store[session_id] = ChatMessageHistory()
     return store[session_id]
-
+# 创建链
 result_chain = RunnableWithMessageHistory(
     chain,
     get_session_history,
@@ -80,7 +83,7 @@ result_chain = RunnableWithMessageHistory(
 )
 
 # Example query
-input_text = "这篇文章总共多少字 作者信息是什么"
+input_text = ""
 resp = result_chain.invoke(
     {'input': input_text},
     config={'configurable': {'session_id': 'yks'}}
