@@ -7,7 +7,6 @@
 """
 from operator import itemgetter
 
-import psycopg2
 # -*- coding: ISO-8859-1 -*-#
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_community.chat_models import QianfanChatEndpoint
@@ -34,7 +33,7 @@ PORT = '5432'
 DATABASE = 'databasetest'
 USERNAME = 'postgres'
 PASSWORD = '123456'
-pg_url = f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset-utf-8'
+pg_url = f'postgresql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset-utf-8'
 # 初始化连接
 db = SQLDatabase.from_uri(pg_url)
 
