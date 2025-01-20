@@ -1,3 +1,5 @@
 {
-    "python.envFile": "${workspaceFolder}/.env"
+    "python.envFile": "${workspaceFolder}/.env",
+    "extensionDependencies": "vscode.git"
+
 }
