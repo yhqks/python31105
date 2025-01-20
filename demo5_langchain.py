@@ -20,6 +20,11 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnableWithMessageHistory
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.chat_message_histories import ChatMessageHistory
+def truncate_input(input_text, max_tokens=500):
+    tokens = input_text.split()
+    if len(tokens) > max_tokens:
+        return ' '.join(tokens[:max_tokens])
+    return input_text
 
 qianfan_ak = os.getenv("QIANFAN_AK")
 qianfan_sk = os.getenv("QIANFAN_SK")
@@ -109,26 +114,30 @@ result_chain=RunnableWithMessageHistory(
 )
 
 #第一轮
-resp1=result_chain.invoke(
-    {'input':"请概括上面文章的主要内容"},
-     config={'configurable':{'session_id':'yks'}}
+input_text1 = truncate_input("请概括上面文章的主要内容")
+resp1 = result_chain.invoke(
+    {'input': input_text1},
+    config={'configurable': {'session_id': 'yks'}}
 )
 print(resp1['answer'])
 
 #第二轮
-resp2=result_chain.invoke(
-    {'input':"请问功能时间线是怎么样的"},
-     config={'configurable':{'session_id':'ks'}}
+input_text2 = truncate_input("请问功能时间线是怎么样的")
+resp2 = result_chain.invoke(
+    {'input': input_text2},
+    config={'configurable': {'session_id': 'ks'}}
 )
 print(resp2['answer'])
 
-
 #第三轮
-resp3=result_chain.invoke(
-    {'input':"请问目前用户画像是什么样的"},
-     config={'configurable':{'session_id':'yks'}}
+input_text3 = truncate_input("请问目前用户画像是什么样的")
+resp3 = result_chain.invoke(
+    {'input': input_text3},
+    config={'configurable': {'session_id': 'yks'}}
 )
 print(resp3['answer'])
 
 
+
+#第四轮
 
