@@ -11,7 +11,7 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 import docx
 from langchain_core.documents import Document
 # Step 1: Data Collection
-file_path = 'C:/Users/yks/Downloads/基于RFID的人体无器械活动识别研究.docx'  # Replace with your local file path
+file_path = 'C:\Users\yks\Desktop\AIOPS资料及代码\AIOPS资料及代码\资料\基站全生命周期智能运维系统-结题汇报20240318.pptx'  # Replace with your local file path
 
 def load_docx_file(file_path):# 读取.docx文件
     doc = docx.Document(file_path)
@@ -37,6 +37,7 @@ res = splitter.split_documents(documents)
 qianfan_ak = os.getenv("QIANFAN_AK")
 qianfan_sk = os.getenv("QIANFAN_SK")
 embedding_model = QianfanEmbeddingsEndpoint(api_key=qianfan_ak, secret_key=qianfan_sk)
+# 创建向量存储 persist_directory='chroma_data_dir' 保存向量数据
 vectorstore = Chroma.from_documents(documents=res, embedding=embedding_model)
 
 # Step 4: Storage 创建搜索器
@@ -79,11 +80,11 @@ result_chain = RunnableWithMessageHistory(
     get_session_history,
     input_messages_key='input',
     history_messages_key='chat_history',
-    output_messages_key='answer'
+    output_messages_key='/'
 )
 
 # Example query
-input_text = ""
+input_text = "这个文档的主要内容是什么？"
 resp = result_chain.invoke(
     {'input': input_text},
     config={'configurable': {'session_id': 'yks'}}

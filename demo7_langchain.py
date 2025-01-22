@@ -49,6 +49,7 @@ chain_test = create_sql_query_chain(model, db)
 # 数据库相关提示语句
 answer_prompt = '''
 给定用户一下的问题、sql语句和sql语句执行之后的结果，回答用户问题。
+在语句中的SQLQuery部分删除，然后执行SQL语句，查看结果。
 Question:{question}
 SQL Query:{query}
 SQL Result:{result}
