@@ -1,18 +1,21 @@
 import io
 import os
-from typing import Union
+from typing import List, Union
 
 # 所需依赖库（需提前安装）
 # pip install python-docx python-pptx openpyxl pdfplumber Pillow
 
 # ========== 模块导入 ==========
 try:
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
     from docx import Document
     from pptx import Presentation
     from openpyxl import load_workbook
     import pdfplumber
+    from langchain_community.vectorstores import Chroma
+    from openai import OpenAI
 except ImportError:
-    raise ImportError("请先安装依赖库：python-docx, python-pptx, openpyxl, pdfplumber")
+    raise ImportError("请先安装依赖库：python-docx, python-pptx, openpyxl, pdfplumber,langchain_text_splitters,Chroma,openai")
 
 # ========== 异常处理类 ==========
 class DocumentParseError(Exception):
@@ -23,7 +26,35 @@ class DocumentParseError(Exception):
 
     def res(self)->None:
         print("文档解析异常")
+def save_vector(text: List[Document]) -> None:
+    """
+    保存向量
+    :param text: 文档内容
+    """
+    client = OpenAI(
+    api_key=os.getenv('DASHSCOPE_API_KEY'),  
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1" 
+)
+    completion = client.embeddings.create(
+                    model="text-embedding-v3",
+                    input=text
+                    )
+    # 创建向量存储
+    vectorstore = Chroma(persist_directory='chroma_data_dir', embedding_function=completion)
+    # 保存向量
+    vectorstore.save(text)
 
+
+def spilt_text(text:str)-> List[Document]:
+    documents = [
+    Document(
+    page_content=str(text),
+    metadata={"source": 'text'}
+    )
+    ]
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    res = splitter.split_documents(documents)
+    return res
 
 # ========== 核心解析器 ==========
 class UniversalDocumentParser:
@@ -32,6 +63,7 @@ class UniversalDocumentParser:
             '.docx': self._parse_word,
             '.pptx': self._parse_ppt,
             '.xlsx': self._parse_excel,
+            '.csv': self._parse_excel,
             '.pdf': self._parse_pdf,
             '.doc': self._parse_word,  # 支持Word 97-2003文档
         }

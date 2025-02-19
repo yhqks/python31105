@@ -11,7 +11,7 @@ from langchain_openai import ChatOpenAI
 import os
 
 llm = ChatOpenAI(
-    openai_api_base="https://api.hunyuan.cloud.tencent.com/v1",
+    openai_api_base="https://api.deepseek.com/v1",
     openai_api_key="sk-e4vSCPglZ9D0BbWfKXvNADgV4dCWju5Yc79PxBQSjAmF3iRd",  # app_key
     model_name="hunyuan-pro",  # 模型名称
 )

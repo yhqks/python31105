@@ -11,7 +11,7 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 import docx
 from langchain_core.documents import Document
 # Step 1: Data Collection
-file_path = 'C:\Users\yks\Desktop\AIOPS资料及代码\AIOPS资料及代码\资料\基站全生命周期智能运维系统-结题汇报20240318.pptx'  # Replace with your local file path
+file_path = 'C:/Users/yks/Desktop/AIOPS资料及代码/AIOPS资料及代码/资料/附件2：基站全生命周期智能运维系统-总结报告20240315-final（工信部结题报告）.docx'
 
 def load_docx_file(file_path):# 读取.docx文件
     doc = docx.Document(file_path)
@@ -84,7 +84,7 @@ result_chain = RunnableWithMessageHistory(
 )
 
 # Example query
-input_text = "这个文档的主要内容是什么？"
+input_text = "aiops是什么？"
 resp = result_chain.invoke(
     {'input': input_text},
     config={'configurable': {'session_id': 'yks'}}
