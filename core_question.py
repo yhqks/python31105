@@ -12,7 +12,7 @@ client = OpenAI(
     api_key=API_KEY,  
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  
 )
-question = "普通用户之间可以相互切换但无法使用su命令切换为root用户如何解决"
+question = "打篮球"
 response = Generation.call(
         model='qwen-72b-chat',  
         api_key=API_KEY,

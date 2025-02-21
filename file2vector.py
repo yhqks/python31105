@@ -103,21 +103,21 @@ def qa_system(question):
 
 
 if __name__ == "__main__":
-        # answer = qa_system('display命令如何显示行数？')
+        # answer = qa_system('介绍下应急shell')
         # print("回答：", answer)
     client = OpenAI(
     api_key=API_KEY,  # 如果您没有配置环境变量，请在此处用您的API Key进行替换
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  # 百炼服务的base_url
 )
 response = Generation.call(
-        model='qwen-max',  # 通义千问生成模型
+        model='qwen-72b-chat',  # 通义千问生成模型
         api_key=API_KEY,
         messages=[{
             'role': 'system',
             'content':'不要进行任何搜索进行回答问题如果不知道就回答不知道'
         },{
             'role': 'user',
-            'content': '新华3的路由设备的CLI界面display 查看信息时如何查看行号'
+            'content': '介绍下应急shell'
         }]
     )
 print(response.output['text'])

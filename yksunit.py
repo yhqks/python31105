@@ -1,4 +1,5 @@
-import io
+
+import chardet
 import os
 from typing import List, Union
 
@@ -14,8 +15,9 @@ try:
     import pdfplumber
     from langchain_community.vectorstores import Chroma
     from openai import OpenAI
+    import chardet
 except ImportError:
-    raise ImportError("请先安装依赖库：python-docx, python-pptx, openpyxl, pdfplumber,langchain_text_splitters,Chroma,openai")
+    raise ImportError("请先安装依赖库：python-docx, python-pptx, openpyxl, pdfplumber,langchain_text_splitters,Chroma,openai,chardet")
 
 # ========== 异常处理类 ==========
 class DocumentParseError(Exception):
@@ -55,9 +57,12 @@ def spilt_text(text:str)-> List[Document]:
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     res = splitter.split_documents(documents)
     return res
+'''
 
+'''
 # ========== 核心解析器 ==========
 class UniversalDocumentParser:
+    """通用文档解析器"""
     def __init__(self):
         self.supported_formats = {
             '.docx': self._parse_word,
@@ -164,6 +169,62 @@ class UniversalDocumentParser:
         
         return '\n'.join(text)
 
+
+
+class FileEncoder:
+    def __init__(self, input_file):
+        """
+        初始化 FileEncoder 类。
+        
+        :param input_file: 输入文件路径
+        """
+        self.input_file = input_file
+        self.current_encoding = None
+
+    def detect_encoding(self):
+        """
+        检测文件的当前编码格式。
+        
+        :return: 文件的编码格式
+        """
+        with open(self.input_file, "rb") as file:
+            raw_data = file.read()
+            result = chardet.detect(raw_data)
+            self.current_encoding = result["encoding"]
+            return self.current_encoding
+
+    def convert_encoding(self, output_file, target_encoding):
+        """
+        将文件从当前编码转换为目标编码。
+        
+        :param output_file: 输出文件路径
+        :param target_encoding: 目标编码格式
+        """
+        if not self.current_encoding:
+            self.detect_encoding()
+
+        with open(self.input_file, "r", encoding=self.current_encoding, errors="replace") as file:
+            content = file.read()
+
+        with open(output_file, "w", encoding=target_encoding, errors="replace") as file:
+            file.write(content)
+
+        print(f"文件已从 {self.current_encoding} 转换为 {target_encoding}，并保存到 {output_file}")
+
+    def convert_to_utf8(self, output_file):
+        self.convert_encoding(output_file, "utf-8")
+
+    def convert_to_gbk(self, output_file):
+        self.convert_encoding(output_file, "gbk")
+
+    def convert_to_latin1(self, output_file):
+        self.convert_encoding(output_file, "latin1")
+
+    def convert_to_windows1252(self, output_file):
+        self.convert_encoding(output_file, "windows-1252")
+
+    def convert_to_iso_8859_1(self, output_file):
+        self.convert_encoding(output_file, "iso-8859-1")
 # ========== 使用示例 ==========
 if __name__ == "__main__":
     parser = UniversalDocumentParser()
