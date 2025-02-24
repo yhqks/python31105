@@ -6,64 +6,71 @@ from dashscope import Generation  # 阿里云通义千问SDK
 from dashscope import TextEmbedding  # 阿里云通义千问SDK
 from openai import OpenAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from BCEmbedding import    EmbeddingModel
 # 配置信息
 API_KEY = os.getenv("DASHSCOPE_API_KEY")
 PDF_FOLDER = "D:/yhq/python31105/pdf"
-VECTOR_STORAGE = "vector_db.npy"
-TEXT_STORAGE = "text_db.npy"
-
-def process_pdfs():
-    client = OpenAI(
-    api_key=API_KEY,  # 如果您没有配置环境变量，请在此处用您的API Key进行替换
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  # 百炼服务的base_url
-)
-    texts = []
-    vectors = []
-      # 获取问题向量
-    # response = Generation.call(
-    #     model='text-embedding-v3',
-    #     api_key=API_KEY,
-    #     input={
-    #         "text": question  # 确保传递正确的输入格式
-    #     }
-    # )
-    # 遍历PDF文件夹
-    for filename in os.listdir(PDF_FOLDER):
-        if filename.endswith(".pdf"):
-            with open(os.path.join(PDF_FOLDER, filename), "rb") as f:
-                pdf = PyPDF2.PdfReader(f)
-                # 提取文本
-                full_text = ""
-                for page in pdf.pages:
-                    full_text += page.extract_text()
-                text_chunks = [page.extract_text() for page in pdf.pages]
-                for chunk in text_chunks:
-                    completion = client.embeddings.create(
-                    model="text-embedding-v3",
-                    input=chunk
-                    )
-                    vector = completion.model_dump()['data']
-                    texts.append(chunk)
-                    vectors.append(vector)
-                    print(f"Processed {filename}")
-    np.save(VECTOR_STORAGE, np.array(vectors))
-    np.save(TEXT_STORAGE, np.array(texts))
+# VECTOR_STORAGE = "vector_db.npy"
+# TEXT_STORAGE = "text_db.npy"
+VECTOR_STORAGE = "embedding_db.npy"
+TEXT_STORAGE = "textembedding_db.npy"
+'''
+embedding use llm.model
+'''
+# def process_pdfs():
+#     client = OpenAI(
+#     api_key=API_KEY,  # 如果您没有配置环境变量，请在此处用您的API Key进行替换
+#     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  # 百炼服务的base_url
+# )
+#     texts = []
+#     vectors = []
+#       # 获取问题向量
+#     # response = Generation.call(
+#     #     model='text-embedding-v3',
+#     #     api_key=API_KEY,
+#     #     input={
+#     #         "text": question  # 确保传递正确的输入格式
+#     #     }
+#     # )
+#     # 遍历PDF文件夹
+#     for filename in os.listdir(PDF_FOLDER):
+#         if filename.endswith(".pdf"):
+#             with open(os.path.join(PDF_FOLDER, filename), "rb") as f:
+#                 pdf = PyPDF2.PdfReader(f)
+#                 # 提取文本
+#                 full_text = ""
+#                 for page in pdf.pages:
+#                     full_text += page.extract_text()
+#                 text_chunks = [page.extract_text() for page in pdf.pages]
+#                 for chunk in text_chunks:
+#                     completion = client.embeddings.create(
+#                     model="text-embedding-v3",
+#                     input=chunk
+#                     )
+#                     vector = completion.model_dump()['data']
+#                     texts.append(chunk)
+#                     vectors.append(vector)
+#                     print(f"Processed {filename}")
+#     np.save(VECTOR_STORAGE, np.array(vectors))
+#     np.save(TEXT_STORAGE, np.array(texts))
 
 def qa_system(question):
-    client = OpenAI(
-    api_key=API_KEY, 
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  
-)
+#     client = OpenAI(
+#     api_key=API_KEY, 
+#     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  
+# )
     # 加载数据
-    vectors = np.load(VECTOR_STORAGE, allow_pickle=True)
     texts = np.load(TEXT_STORAGE, allow_pickle=True)
-    
+    vectors = np.load(VECTOR_STORAGE, allow_pickle=True)
+    vectors = vectors.squeeze()  # 去掉多余的维度
   
-    completion = client.embeddings.create(
-                    model="text-embedding-v3",  
-                    input=question
-                    )
-    q_vector = np.array(completion.model_dump()['data'][0]['embedding']).reshape(1, -1)
+    # completion = client.embeddings.create(
+    #                 model="text-embedding-v3",  
+    #                 input=question
+    #                 )
+    # q_vector = np.array(completion.model_dump()['data'][0]['embedding']).reshape(1, -1)
+    model=EmbeddingModel(model_name_or_path='D:/yhq/python31105/bce-embedding-base_v1')
+    q_vector=model.encode(question).reshape(1,-1)
     print(q_vector)
     
     # 计算相似度
@@ -103,21 +110,21 @@ def qa_system(question):
 
 
 if __name__ == "__main__":
-        # answer = qa_system('介绍下应急shell')
-        # print("回答：", answer)
+    answer = qa_system('get_slot_range作用是什么')
+    print("回答：", answer)
     client = OpenAI(
     api_key=API_KEY,  # 如果您没有配置环境变量，请在此处用您的API Key进行替换
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  # 百炼服务的base_url
 )
-response = Generation.call(
-        model='qwen-72b-chat',  # 通义千问生成模型
-        api_key=API_KEY,
-        messages=[{
-            'role': 'system',
-            'content':'不要进行任何搜索进行回答问题如果不知道就回答不知道'
-        },{
-            'role': 'user',
-            'content': '介绍下应急shell'
-        }]
-    )
-print(response.output['text'])
+# response = Generation.call(
+#         model='qwen-72b-chat',  # 通义千问生成模型
+#         api_key=API_KEY,
+#         messages=[{
+#             'role': 'system',
+#             'content':'不要进行任何搜索进行回答问题如果不知道就回答不知道'
+#         },{
+#             'role': 'user',
+#             'content': '介绍下应急shell'
+#         }]
+#     )
+# print(response.output['text'])
