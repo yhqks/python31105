@@ -1,1 +1,13 @@
 *.env
+bce-embedding-base_v1/
+bce-reranker-base_v1/
+.vscode/
+__pycache__/
+*.pyc
+*.log
+.pytest_chache/
+.idea/
+pdf/
+chroma_data_dir/
+*.npy
+*.docx
