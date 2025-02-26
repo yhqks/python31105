@@ -19,19 +19,24 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 
-
+from langchain_openai import OpenAI
 qianfan_ak = os.getenv("QIANFAN_AK")
 qianfan_sk = os.getenv("QIANFAN_SK")
 # print(qianfan_sk,qianfan_ak)
 # 得到模型：千帆
-model = QianfanChatEndpoint(
-    model="ERNIE-4.0-8K",
-    temperature=0.2,
-    timeout=180,
-    api_key=qianfan_ak,
-    secret_key=qianfan_sk,
+# model = QianfanChatEndpoint(
+#     model="ERNIE-4.0-8K",
+#     temperature=0.2,
+#     timeout=180,
+#     api_key=qianfan_ak,
+#     secret_key=qianfan_sk,
+# )
+API_KEY = os.getenv("DASHSCOPE_API_KEY")
+model = OpenAI(
+    api_key=API_KEY,  # 如果您没有配置环境变量，请在此处用您的API Key进行替换
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",# 百炼服务的base_url
+    model='qwen-72b-chat'
 )
-
 # 链接数据库
 # sqlalchemy
 HOSTNAME = '127.0.0.1'
@@ -50,10 +55,13 @@ chain_test = create_sql_query_chain(model, db)
 answer_prompt = '''
 给定用户一下的问题、sql语句和sql语句执行之后的结果，回答用户问题。
 在语句中的SQLQuery部分删除，然后执行SQL语句，查看结果。
+特别注意不要回答任何多余的内容只需要回答sql语句
 Question:{question}
 SQL Query:{query}
 SQL Result:{result}
 回答：
+特别注意不要回答任何多余的内容只需要回答sql语句
+
 '''
 prompt_template = ChatPromptTemplate.from_messages([
     ('human',answer_prompt)
