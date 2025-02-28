@@ -11,3 +11,4 @@ pdf/
 chroma_data_dir/
 *.npy
 *.docx
+attachments/
