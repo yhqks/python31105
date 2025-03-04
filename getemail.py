@@ -7,7 +7,7 @@ import re
 # 邮箱配置
 EMAIL =os.getenv('EMAIL')  # 你的邮箱地址
 PASSWORD = os.getenv('PASSWORD')       # 你的邮箱密码
-IMAP_SERVER = os.getenv('IMAP_SERVER') # IMAP 服务器地址（例如：imap.gmail.com）
+IMAP_SERVER = os.getenv('IMAP_SERVER') # IMAP 服务器地址
 ATTACHMENT_DIR ='attachments'  # 附件下载目录
 if not os.path.exists(ATTACHMENT_DIR):
     os.makedirs(ATTACHMENT_DIR)

@@ -228,20 +228,22 @@ class FileEncoder:
 # ========== 使用示例 ==========
 if __name__ == "__main__":
     parser = UniversalDocumentParser()
-    
-    # 示例文件路径
-    test_files = {
-        "Word文档": "example.docx",
-        "PPT文档": "ppt.ppt",
-        "Excel文档": "data.xlsx",
-        "PDF文档": "pdf.pdf"
-    }
+    y=FileEncoder("C:/Users/yks/Desktop/AIOPS资料及代码/AIOPS资料及代码/代码及数据/隐患识别/tianjinxunjian\AIOps_ADBS\config\解决方案.csv")
+    y.convert_to_iso_8859_1("C:/Users/yks/Desktop/AIOPS资料及代码/AIOPS资料及代码/代码及数据/隐患识别/tianjinxunjian\AIOps_ADBS\config\解决方案.csv")
 
-    for doc_type, path in test_files.items():
-        try:
-            content = parser.parse(path)
-            print(f"========== {doc_type} 解析结果 ==========")
-            print(content[:500] + "..." if len(content) > 500 else content)  # 截取前500字符
-            print("\n")
-        except Exception as e:
-            print(f"解析 {doc_type} 失败：{str(e)}")
+    # # 示例文件路径
+    # test_files = {
+    #     "Word文档": "example.docx",
+    #     "PPT文档": "ppt.ppt",
+    #     "Excel文档": "data.xlsx",
+    #     "PDF文档": "pdf.pdf"
+    # }
+
+    # for doc_type, path in test_files.items():
+    #     try:
+    #         content = parser.parse(path)
+    #         print(f"========== {doc_type} 解析结果 ==========")
+    #         print(content[:500] + "..." if len(content) > 500 else content)  # 截取前500字符
+    #         print("\n")
+    #     except Exception as e:
+    #         print(f"解析 {doc_type} 失败：{str(e)}")
