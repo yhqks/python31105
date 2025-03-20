@@ -54,7 +54,7 @@ embedding use llm.model
 #     np.save(VECTOR_STORAGE, np.array(vectors))
 #     np.save(TEXT_STORAGE, np.array(texts))
 
-def qa_system(question):
+def qa_system(question) -> str:
 #     client = OpenAI(
 #     api_key=API_KEY, 
 #     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"  

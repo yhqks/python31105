@@ -24,7 +24,7 @@ def fileEmbedding(file: str, VECTOR_STORAGE: str = "embedding_db2.npy", TEXT_STO
     
     if os.path.isfile(file):
         try:
-            content = yk.UniversalDocumentParser().parse(file)
+            content = yk.UniversalDocumentParser.parse(file)
             print(content[:500] + "..." if len(content) > 500 else content)  # 截取前500字符
             print("\n")
             split = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
