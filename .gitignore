@@ -12,3 +12,8 @@ chroma_data_dir/
 *.npy
 *.docx
 attachments/
+技术改造.png
+girl.jpeg
+vanna/chroma.sqlite3
+vanna/935da8eb-23b8-49f9-910b-796a561688f9/length.bin
+__pycache__/yksunit.cpython-311.pyc
