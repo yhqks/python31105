@@ -14,8 +14,7 @@ def analyze_image(image_path):
     # 调用模型
     response = ollama.generate(
         model='llama3.2-vision',  # 模型名称
-        prompt=''' 识别图中的所有汉字。
-        注意：只需要返回识别出来的汉字即可。不需要任何其他的内容包括提示。这点十分重要。
+        prompt='''详细描述图片中的内容，尽量准确地识别出所有可见的文本，并保持文本的原始结构和格式。如果有任何单词或短语不清晰，请在转录中用[unclear]表示。仅提供转录，不要有任何额外的评论。
         '''
    ,  # 提示词
         images=[image_base64]  # 传入图片
